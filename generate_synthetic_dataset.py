@@ -2,6 +2,10 @@ import numpy as np
 import pandas as pd
 from scipy.special import expit
 from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import LinearRegression
+from causallib.estimation import IPW
+from math import log
 
 
 def generate_col_names(d):
@@ -45,7 +49,7 @@ def load_dgp_scenario(scenario, d):
     return beta, nu
 
 
-def generate_synthetic_dataset(n=1000, d=20, rho=0, eta=0, num_scenario=1):
+def generate_synthetic_dataset(n=1000, d=20, rho=0, eta=2, num_scenario=1):
     mean_x = 0
     var_x = 1
     cov_x = var_x * (np.eye(d) + ~np.eye(d, dtype=bool) * rho)  # covariance matrix of the Gaussian covariates.
@@ -63,5 +67,19 @@ def generate_synthetic_dataset(n=1000, d=20, rho=0, eta=0, num_scenario=1):
     return df
 
 
-df = generate_synthetic_dataset()
-
+def calc_outcome_adaptive_lasso(df, Lambda, gamma_convergence_factor):
+    n = df.shape[0]  # number of samples
+    gamma = 2*(1 + gamma_convergence_factor - log(Lambda, n))
+    XA = df.drop(columns=['Y'])
+    X = XA.drop(columns=['A'])
+    lr = LinearRegression(fit_intercept=True).fit(XA, df['Y'])
+    betaXY = lr.coef_[1:]
+    weights = (np.abs(betaXY)) ** (-1 * gamma)
+    X_w = X / weights
+    learner = LogisticRegression(solver='liblinear', penalty='l1', C=Lambda)
+    ipw = IPW(learner)
+    ipw.fit(X_w, df['A'])
+    ipw.compute_weights(X_w, df['A']).head()
+    outcomes = ipw.estimate_population_outcome(X_w, df['A'], df['Y'])
+    effect = ipw.estimate_effect(outcomes[1], outcomes[0])
+    return effect
