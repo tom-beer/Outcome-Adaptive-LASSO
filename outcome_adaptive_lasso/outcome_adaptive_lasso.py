@@ -67,19 +67,40 @@ def generate_synthetic_dataset(n=1000, d=20, rho=0, eta=2, num_scenario=1):
     return df
 
 
-def calc_outcome_adaptive_lasso(df, Lambda, gamma_convergence_factor):
+def calc_outcome_adaptive_lasso_single_lambda(df, Lambda, gamma_convergence_factor):
     n = df.shape[0]  # number of samples
     gamma = 2*(1 + gamma_convergence_factor - log(Lambda, n))
     XA = df.drop(columns=['Y'])
     X = XA.drop(columns=['A'])
     lr = LinearRegression(fit_intercept=True).fit(XA, df['Y'])
-    betaXY = lr.coef_[1:]
-    weights = (np.abs(betaXY)) ** (-1 * gamma)
+    xy_coefs = lr.coef_[1:]
+    weights = (np.abs(xy_coefs)) ** (-1 * gamma)
     X_w = X / weights
     learner = LogisticRegression(solver='liblinear', penalty='l1', C=Lambda)
-    ipw = IPW(learner)
+    ipw = IPW(learner, use_stabilized=True)
     ipw.fit(X_w, df['A'])
-    ipw.compute_weights(X_w, df['A']).head()
-    outcomes = ipw.estimate_population_outcome(X_w, df['A'], df['Y'])
+    weights = ipw.compute_weights(X_w, df['A'])
+    outcomes = ipw.estimate_population_outcome(X_w, df['A'], df['Y'], w=weights)
     effect = ipw.estimate_effect(outcomes[1], outcomes[0])
-    return effect
+    return effect, xy_coefs, weights
+
+
+def calc_outcome_adaptive_lasso(df, lambdas, gamma_convergence_factor):
+    x = df.drop(columns=['A', 'Y'])
+    d = x.shape[1]
+    if lambdas.shape[0] == 1:
+        ate, _, _ = calc_outcome_adaptive_lasso_single_lambda(df, lambdas, gamma_convergence_factor)
+    else:
+        amd_vec = np.zeros(lambdas.shape[0])
+        ate_vec = np.zeros(lambdas.shape[0])
+        for il, Lambda in enumerate(lambdas):
+            ate_vec[il], xy_coefs, ipw = calc_outcome_adaptive_lasso_single_lambda(df, lambdas[il], gamma_convergence_factor)
+            amd = 0
+            for j in range(d):
+                xj = x.iloc[:, j]
+                diff_d = np.average(xj[df['A'] == 1], weights=ipw[df['A'] == 1]) - \
+                         np.average(xj[df['A'] == 0], weights=ipw[df['A'] == 0])
+                amd += abs(xy_coefs[j]) * abs(diff_d)
+            amd_vec[il] = amd
+
+    return ate_vec[np.argmin(amd_vec)]
