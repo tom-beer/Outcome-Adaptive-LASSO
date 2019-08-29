@@ -49,19 +49,21 @@ def load_dgp_scenario(scenario, d):
     return beta, nu
 
 
-def generate_synthetic_dataset(n=1000, d=20, rho=0, eta=2, num_scenario=1):
+def generate_synthetic_dataset(dgp_params):
+    d = dgp_params['d']
+    n = dgp_params['n']
     mean_x = 0
     var_x = 1
-    cov_x = var_x * (np.eye(d) + ~np.eye(d, dtype=bool) * rho)  # covariance matrix of the Gaussian covariates.
+    cov_x = var_x * (np.eye(d) + ~np.eye(d, dtype=bool) * dgp_params['rho'])  # covariance matrix of the Gaussian covariates.
     # Variance of each covariate is 1, correlation coefficient of every pair is rho
     X = np.random.multivariate_normal(mean=mean_x * np.ones(d), cov=cov_x, size=n)  # shape (n,d)
     # Normalize coviarates to have mean 0 and standard deviation 1
     scaler = StandardScaler(copy=False)
     scaler.fit_transform(X)
 
-    beta, nu = load_dgp_scenario(num_scenario, d)
+    beta, nu = load_dgp_scenario(dgp_params['scenario_num'], d)
     A = np.random.binomial(np.ones(n, dtype=int), expit(np.dot(X, nu)))
-    Y = np.random.randn(n) + eta * A + np.dot(X, beta)
+    Y = np.random.randn(n) + dgp_params['eta'] * A + np.dot(X, beta)
     col_names = generate_col_names(d)
     df = pd.DataFrame(np.hstack([A.reshape(-1, 1), Y.reshape(-1, 1), X]), columns=col_names)
     return df
@@ -77,7 +79,7 @@ def calc_outcome_adaptive_lasso_single_lambda(df, Lambda, gamma_convergence_fact
     weights = (np.abs(xy_coefs)) ** (-1 * gamma)
     X_w = X / weights
     learner = LogisticRegression(solver='liblinear', penalty='l1', C=Lambda)
-    ipw = IPW(learner, use_stabilized=True)
+    ipw = IPW(learner, use_stabilized=False)
     ipw.fit(X_w, df['A'])
     weights = ipw.compute_weights(X_w, df['A'])
     outcomes = ipw.estimate_population_outcome(X_w, df['A'], df['Y'], w=weights)
@@ -85,22 +87,28 @@ def calc_outcome_adaptive_lasso_single_lambda(df, Lambda, gamma_convergence_fact
     return effect, xy_coefs, weights
 
 
-def calc_outcome_adaptive_lasso(df, lambdas, gamma_convergence_factor):
+def calc_wamd(df, ipw, xy_coefs):
     x = df.drop(columns=['A', 'Y'])
     d = x.shape[1]
-    if lambdas.shape[0] == 1:
-        ate, _, _ = calc_outcome_adaptive_lasso_single_lambda(df, lambdas, gamma_convergence_factor)
-    else:
-        amd_vec = np.zeros(lambdas.shape[0])
-        ate_vec = np.zeros(lambdas.shape[0])
-        for il, Lambda in enumerate(lambdas):
-            ate_vec[il], xy_coefs, ipw = calc_outcome_adaptive_lasso_single_lambda(df, lambdas[il], gamma_convergence_factor)
-            amd = 0
-            for j in range(d):
-                xj = x.iloc[:, j]
-                diff_d = np.average(xj[df['A'] == 1], weights=ipw[df['A'] == 1]) - \
-                         np.average(xj[df['A'] == 0], weights=ipw[df['A'] == 0])
-                amd += abs(xy_coefs[j]) * abs(diff_d)
-            amd_vec[il] = amd
+    amd = 0
+    for j in range(d):
+        xj = x.iloc[:, j]
+        diff_d = np.average(xj[df['A'] == 1], weights=ipw[df['A'] == 1]) - \
+                 np.average(xj[df['A'] == 0], weights=ipw[df['A'] == 0])
+        amd += abs(xy_coefs[j]) * abs(diff_d)
+    return amd
 
-    return ate_vec[np.argmin(amd_vec)]
+
+def calc_outcome_adaptive_lasso(df, oal_params):
+    n = df.shape[0]
+    lambdas = oal_params['log_lambdas'] ** n
+    gcf = oal_params['gamma_convergence_factor']
+    amd_vec = np.zeros(lambdas.shape[0])
+    ate_vec = np.zeros(lambdas.shape[0])
+    for il, Lambda in enumerate(lambdas):
+        ate_vec[il], xy_coefs, ipw = calc_outcome_adaptive_lasso_single_lambda(df, lambdas[il], gcf)
+        amd_vec[il] = calc_wamd(df, ipw, xy_coefs)
+
+    ate = ate_vec[np.argmin(amd_vec)]
+
+    return ate
