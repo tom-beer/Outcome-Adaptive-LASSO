@@ -101,7 +101,7 @@ def calc_wamd(df, ipw, xy_coefs):
 
 def calc_outcome_adaptive_lasso(df, oal_params):
     n = df.shape[0]
-    lambdas = oal_params['log_lambdas'] ** n
+    lambdas = n ** oal_params['log_lambdas']
     gcf = oal_params['gamma_convergence_factor']
     amd_vec = np.zeros(lambdas.shape[0])
     ate_vec = np.zeros(lambdas.shape[0])
