@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f69f7814-2b84-458f-bc7d-29f4eb529d80" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/outcome_adaptive_lasso/outcome_adaptive_lasso.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/generate_synthetic_dataset.py" beforeDir="false" afterPath="$PROJECT_DIR$/generate_synthetic_dataset.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/generate_synthetic_dataset.py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/outcome_adaptive_lasso.py" beforeDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -18,10 +20,10 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/generate_synthetic_dataset.py">
+        <entry file="file://$PROJECT_DIR$/outcome_adaptive_lasso/outcome_adaptive_lasso.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1520">
-              <caret line="76" column="24" selection-start-line="76" selection-start-column="24" selection-end-line="76" selection-end-column="24" />
+            <state relative-caret-position="1380">
+              <caret line="69" column="31" selection-start-line="69" selection-start-column="4" selection-end-line="69" selection-end-column="31" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -29,11 +31,20 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/outcome_adaptive_lasso.py">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/outcome_adaptive_lasso/__init__.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="9" column="10" lean-forward="true" selection-start-line="9" selection-start-column="10" selection-end-line="9" selection-end-column="10" />
+            <state relative-caret-position="40">
+              <caret line="2" lean-forward="true" selection-start-line="2" selection-end-line="2" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/run_example.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="220">
+              <caret line="11" column="28" lean-forward="true" selection-start-line="11" selection-start-column="28" selection-end-line="11" selection-end-column="28" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -69,6 +80,9 @@
         <option value="$PROJECT_DIR$/generate_synthetic_dataset2.py" />
         <option value="$PROJECT_DIR$/generate_synthetic_dataset.py" />
         <option value="$PROJECT_DIR$/outcome_adaptive_lasso.py" />
+        <option value="$PROJECT_DIR$/__init__.py" />
+        <option value="$PROJECT_DIR$/outcome_adaptive_lasso/__init__.py" />
+        <option value="$PROJECT_DIR$/run_example.py" />
       </list>
     </option>
   </component>
@@ -106,6 +120,11 @@
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/outcome_adaptive_lasso" />
+    </key>
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -177,7 +196,7 @@
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/outcome_adaptive_lasso.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/outcome_adaptive_lasso/outcome_adaptive_lasso.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -209,12 +228,12 @@
       <workItem from="1566811004538" duration="1713000" />
       <workItem from="1566820866680" duration="7363000" />
       <workItem from="1566993745661" duration="5131000" />
-      <workItem from="1567004147395" duration="2347000" />
+      <workItem from="1567004147395" duration="4259000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="35738000" />
+    <option name="totallyTimeSpent" value="37650000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -229,7 +248,7 @@
     <frame x="1347" y="27" width="1533" height="1173" extended-state="6" />
     <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.106254205" />
+      <window_info content_ui="combo" id="Project" order="0" visible="true" weight="0.15265636" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -369,10 +388,27 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/outcome_adaptive_lasso.py">
+    <entry file="file://$PROJECT_DIR$/outcome_adaptive_lasso/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="9" column="10" lean-forward="true" selection-start-line="9" selection-start-column="10" selection-end-line="9" selection-end-column="10" />
+        <state relative-caret-position="40">
+          <caret line="2" lean-forward="true" selection-start-line="2" selection-end-line="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/outcome_adaptive_lasso/outcome_adaptive_lasso.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1380">
+          <caret line="69" column="31" selection-start-line="69" selection-start-column="4" selection-end-line="69" selection-end-column="31" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/run_example.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="220">
+          <caret line="11" column="28" lean-forward="true" selection-start-line="11" selection-start-column="28" selection-end-line="11" selection-end-column="28" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
