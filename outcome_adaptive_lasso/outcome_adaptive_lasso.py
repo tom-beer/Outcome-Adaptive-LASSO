@@ -9,7 +9,7 @@ from math import log
 
 
 def generate_col_names(d):
-    assert(d >= 6)
+    assert (d >= 6)
     pC = 2  # number of confounders
     pP = 2  # number of outcome predictors
     pI = 2  # number of exposure predictors
@@ -36,16 +36,16 @@ def load_dgp_scenario(scenario, d):
         nu[confounder_indexes] = 0.4
         nu[exposure_indexes] = 1
     elif scenario == 3:
-        beta[confounder_indexes] = 0.6
-        beta[predictor_indexes] = 0.6
-        nu[confounder_indexes] = 1
-        nu[exposure_indexes] = 1.8
-    else:
-        assert(scenario == 4)
         beta[confounder_indexes] = 0.2
         beta[predictor_indexes] = 0.6
         nu[confounder_indexes] = 0.4
         nu[exposure_indexes] = 1
+    else:
+        assert (scenario == 4)
+        beta[confounder_indexes] = 0.6
+        beta[predictor_indexes] = 0.6
+        nu[confounder_indexes] = 1
+        nu[exposure_indexes] = 1.8
     return beta, nu
 
 
@@ -54,7 +54,8 @@ def generate_synthetic_dataset(dgp_params):
     n = dgp_params['n']
     mean_x = 0
     var_x = 1
-    cov_x = var_x * (np.eye(d) + ~np.eye(d, dtype=bool) * dgp_params['rho'])  # covariance matrix of the Gaussian covariates.
+    cov_x = var_x * (
+            np.eye(d) + ~np.eye(d, dtype=bool) * dgp_params['rho'])  # covariance matrix of the Gaussian covariates.
     # Variance of each covariate is 1, correlation coefficient of every pair is rho
     X = np.random.multivariate_normal(mean=mean_x * np.ones(d), cov=cov_x, size=n)  # shape (n,d)
     # Normalize coviarates to have mean 0 and standard deviation 1
@@ -71,7 +72,7 @@ def generate_synthetic_dataset(dgp_params):
 
 def calc_outcome_adaptive_lasso_single_lambda(df, Lambda, gamma_convergence_factor):
     n = df.shape[0]  # number of samples
-    gamma = 2*(1 + gamma_convergence_factor - log(Lambda, n))
+    gamma = 2 * (1 + gamma_convergence_factor - log(Lambda, n))
     XA = df.drop(columns=['Y'])
     X = XA.drop(columns=['A'])
     lr = LinearRegression(fit_intercept=True).fit(XA, df['Y'])
@@ -87,21 +88,34 @@ def calc_outcome_adaptive_lasso_single_lambda(df, Lambda, gamma_convergence_fact
     return effect, xy_coefs, weights
 
 
+def tmp_fun(xj, ipw, idx_trt):
+    return np.average(xj[idx_trt], weights=ipw[idx_trt]) - \
+           np.average(xj[~idx_trt], weights=ipw[~idx_trt])
+
+
 def calc_wamd(df, ipw, xy_coefs):
-    x = df.drop(columns=['A', 'Y'])
-    d = x.shape[1]
-    amd = 0
-    for j in range(d):
-        xj = x.iloc[:, j]
-        diff_d = np.average(xj[df['A'] == 1], weights=ipw[df['A'] == 1]) - \
-                 np.average(xj[df['A'] == 0], weights=ipw[df['A'] == 0])
-        amd += abs(xy_coefs[j]) * abs(diff_d)
-    return amd
+    x_df = df.drop(columns=['A', 'Y'])
+    idx_trt = df['A'] == 1
+    return (x_df
+            .apply(lambda x: abs(np.average(x[idx_trt], weights=ipw[idx_trt])
+                                 - np.average(x[~idx_trt], weights=ipw[~idx_trt])))
+            .dot(abs(xy_coefs))
+            )
 
 
 def calc_outcome_adaptive_lasso(df, oal_params):
+    """Calculate estimate of average treatment effect using the outcome adaptive lasso (Shortreed and Ertefaie, 2017)
+
+    Parameters
+    ----------
+
+
+    Returns
+    -------
+    ate : estimate of the average treatment effect
+    """
     n = df.shape[0]
-    lambdas = n ** oal_params['log_lambdas']
+    lambdas = n ** np.array(oal_params['log_lambdas'])
     gcf = oal_params['gamma_convergence_factor']
     amd_vec = np.zeros(lambdas.shape[0])
     ate_vec = np.zeros(lambdas.shape[0])
