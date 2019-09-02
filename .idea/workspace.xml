@@ -2,6 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="f69f7814-2b84-458f-bc7d-29f4eb529d80" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/dictionaries/tom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dictionaries/tom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/outcome_adaptive_lasso/outcome_adaptive_lasso.py" beforeDir="false" afterPath="$PROJECT_DIR$/outcome_adaptive_lasso/outcome_adaptive_lasso.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/run_example.py" beforeDir="false" afterPath="$PROJECT_DIR$/run_example.py" afterDir="false" />
@@ -13,31 +14,29 @@
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="CoverageDataManager">
-    <SUITE FILE_PATH="coverage/Outcome_Adaptive_LASSO$run_example.coverage" NAME="run_example Coverage Results" MODIFIED="1567329305676" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/Outcome_Adaptive_LASSO$run_example.coverage" NAME="run_example Coverage Results" MODIFIED="1567409965759" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Outcome_Adaptive_LASSO$outcome_adaptive_lasso.coverage" NAME="outcome_adaptive_lasso Coverage Results" MODIFIED="1567077789614" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
     <SUITE FILE_PATH="coverage/Outcome_Adaptive_LASSO$generate_synthetic_dataset.coverage" NAME="generate_synthetic_dataset Coverage Results" MODIFIED="1566998884584" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/outcome_adaptive_lasso/outcome_adaptive_lasso.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="380">
-              <caret line="132" column="38" lean-forward="true" selection-start-line="132" selection-start-column="38" selection-end-line="132" selection-end-column="38" />
-              <folding>
-                <element signature="e#0#18#0" expanded="true" />
-              </folding>
+            <state relative-caret-position="20">
+              <caret line="1" selection-start-line="1" selection-end-line="1" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/run_example.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="200">
-              <caret line="12" selection-start-line="12" selection-end-line="12" />
-            </state>
-          </provider>
+          <provider selected="true" editor-type-id="text-editor" />
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="mock:///home/tom/.PyCharm2018.3/system/snapshots/Outcome-Adaptive-LASSO6.pstat">
+          <provider selected="true" editor-type-id="profiler-session-editor" />
         </entry>
       </file>
     </leaf>
@@ -71,8 +70,8 @@
         <option value="$PROJECT_DIR$/outcome_adaptive_lasso.py" />
         <option value="$PROJECT_DIR$/__init__.py" />
         <option value="$PROJECT_DIR$/outcome_adaptive_lasso/__init__.py" />
-        <option value="$PROJECT_DIR$/run_example.py" />
         <option value="$PROJECT_DIR$/outcome_adaptive_lasso/outcome_adaptive_lasso.py" />
+        <option value="$PROJECT_DIR$/run_example.py" />
       </list>
     </option>
   </component>
@@ -97,6 +96,11 @@
             <path>
               <item name="Outcome-Adaptive-LASSO" type="b2602c69:ProjectViewProjectNode" />
               <item name="Outcome-Adaptive-LASSO" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Outcome-Adaptive-LASSO" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Outcome-Adaptive-LASSO" type="462c0819:PsiDirectoryNode" />
+              <item name="outcome_adaptive_lasso" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -246,12 +250,13 @@
       <workItem from="1567081552977" duration="1413000" />
       <workItem from="1567082976995" duration="1407000" />
       <workItem from="1567317533792" duration="16325000" />
-      <workItem from="1567337921667" duration="1210000" />
+      <workItem from="1567337921667" duration="2101000" />
+      <workItem from="1567350058001" duration="1878000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="66017000" />
+    <option name="totallyTimeSpent" value="68786000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -264,14 +269,13 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="1347" y="27" width="1533" height="1173" extended-state="6" />
-    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.12104909" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" visible="true" weight="0.26092803" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" side_tool="true" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.3297975" />
+      <window_info anchor="bottom" id="Run" order="2" visible="true" weight="0.3297975" />
       <window_info anchor="bottom" id="Debug" order="3" weight="0.4021215" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
@@ -281,14 +285,14 @@
       <window_info anchor="bottom" id="Database Changes" order="9" />
       <window_info anchor="bottom" id="Event Log" order="10" side_tool="true" />
       <window_info anchor="bottom" id="Terminal" order="11" />
-      <window_info anchor="bottom" id="Python Console" order="12" visible="true" weight="0.4021215" />
+      <window_info anchor="bottom" id="Python Console" order="12" weight="0.4021215" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="right" id="Remote Host" order="3" />
-      <window_info anchor="right" id="SciView" order="4" visible="true" weight="0.19771352" />
+      <window_info anchor="right" id="SciView" order="4" sideWeight="0.49928057" visible="true" weight="0.19771352" />
       <window_info anchor="right" id="Database" order="5" />
-      <window_info anchor="right" x="0" y="0" width="333" height="973" id="Documentation" order="6" side_tool="true" visible="true" weight="0.10827169" />
+      <window_info anchor="right" x="0" y="0" width="333" height="973" id="Documentation" order="6" sideWeight="0.5007194" side_tool="true" visible="true" weight="0.19771352" />
       <window_info anchor="right" id="Coverage" order="7" side_tool="true" />
     </layout>
   </component>
@@ -436,20 +440,13 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/outcome_adaptive_lasso/outcome_adaptive_lasso.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="380">
-          <caret line="132" column="38" lean-forward="true" selection-start-line="132" selection-start-column="38" selection-end-line="132" selection-end-column="38" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="20">
+          <caret line="1" selection-start-line="1" selection-end-line="1" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/run_example.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="200">
-          <caret line="12" selection-start-line="12" selection-end-line="12" />
-        </state>
-      </provider>
+      <provider selected="true" editor-type-id="text-editor" />
     </entry>
   </component>
 </project>
