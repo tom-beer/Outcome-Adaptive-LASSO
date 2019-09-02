@@ -9,6 +9,7 @@ from math import log
 
 
 def generate_col_names(d):
+    """Utility function to generate column names for the synthetic dataset """
     assert (d >= 6)
     pC = 2  # number of confounders
     pP = 2  # number of outcome predictors
@@ -20,6 +21,7 @@ def generate_col_names(d):
 
 
 def load_dgp_scenario(scenario, d):
+    """Utility function to load predefined scenarios"""
     confounder_indexes = [1, 2]
     predictor_indexes = [3, 4]
     exposure_indexes = [5, 6]
@@ -124,15 +126,17 @@ def calc_outcome_adaptive_lasso_single_lambda(df, Lambda, gamma_convergence_fact
     return effect, xy_coefs, weights
 
 
-def calc_diff(x_df, idx_trt, ipw):
+def calc_group_diff(x_df, idx_trt, ipw):
+    """Utility function to calculate the difference in covariates between treatment and control groups"""
     return (np.abs(np.average(x_df[idx_trt], weights=ipw[idx_trt], axis=0)) -
             np.average(x_df[~idx_trt], weights=ipw[~idx_trt], axis=0))
 
 
 def calc_wamd(df, ipw, xy_coefs):
+    """Utility function to calculate the weighted absolute mean difference"""
     x_df = df.drop(columns=['A', 'Y'])
     idx_trt = df['A'] == 1
-    return calc_diff(x_df.values, idx_trt.values, ipw.values).dot(np.abs(xy_coefs))
+    return calc_group_diff(x_df.values, idx_trt.values, ipw.values).dot(np.abs(xy_coefs))
 
 
 def calc_outcome_adaptive_lasso(df, gamma_convergence_factor=2,
@@ -168,7 +172,7 @@ def calc_outcome_adaptive_lasso(df, gamma_convergence_factor=2,
     ate_vec = np.zeros(lambdas.shape[0])
 
     # Calculate ATE for each lambda, select the one minimizing the weighted absolute mean difference
-    for il, _ in enumerate(lambdas):
+    for il in range(len(lambdas)):
         ate_vec[il], xy_coefs, ipw = calc_outcome_adaptive_lasso_single_lambda(df, lambdas[il], gamma_convergence_factor)
         amd_vec[il] = calc_wamd(df, ipw, xy_coefs)
 
