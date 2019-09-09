@@ -53,36 +53,27 @@ def load_dgp_scenario(scenario, d):
 
 def generate_synthetic_dataset(n=1000, d=100, rho=0, eta=0, scenario_num=1):
     """Generate a simulated dataset according to the settings described in section 4.1 of the paper
-
     Covariates X are zero mean unit variance Gaussians with correlation rho
     Exposure A is logistic in X: logit(P(A=1)) = nu.T*X (nu is set according to scenario_num)
     Outcome Y is linear in A and X: Y =  eta*A + beta.T*X + N(0,1)
-
     Parameters
     ----------
     n : number of samples in the dataset
-
     d : total number of covariates. Of the d covariates, d-6 are spurious,
         i.e. they do not influence the exposure or the outcome
-
     rho : correlation between pairwise Gaussian covariates
-
     eta : True treatment effect
-
     scenario_num : one of {1-4}. Each scenario differs in the vectors nu and beta.
         According to the supplementary material of the paper, the four scenarios are:
         1) beta = [0.6, 0.6, 0.6, 0.6, 0, ..., 0] and nu = [1, 1, 0, 0, 1, 1, 0, ..., 0]
         2) beta = [0.6, 0.6, 0.6, 0.6, 0, ..., 0] and nu = [0.4, 0.4, 0, 0, 1, 1, 0, ..., 0]
         3) beta = [0.2, 0.2, 0.6, 0.6, 0, ..., 0] and nu = [0.4, 0.4, 0, 0, 1, 1, 0, ..., 0]
         4) beta = [0.6, 0.6, 0.6, 0.6, 0, ..., 0] and nu = [1, 1, 0, 0, 1.8, 1.8, 0, ..., 0]
-
-
     Returns
     -------
     df : DataFrame of n rows and d+2 columns: A, Y and d covariates.
          Covariates are named Xc if they are confounders, Xi if they are instrumental variables,
          Xp if they are predictors of outcome and Xs if they are spurious
-
     TODO:
      * Enable manual selection of nu and beta
     """
@@ -102,64 +93,56 @@ def generate_synthetic_dataset(n=1000, d=100, rho=0, eta=0, scenario_num=1):
     return df
 
 
-def calc_outcome_adaptive_lasso_single_lambda(df, Lambda, gamma_convergence_factor):
+def calc_outcome_adaptive_lasso_single_lambda(A, Y, X, Lambda, gamma_convergence_factor):
     """Calculate ATE with the outcome adaptive lasso"""
     n = df.shape[0]  # number of samples
     # extract gamma according to Lambda and gamma_convergence_factor
     gamma = 2 * (1 + gamma_convergence_factor - log(Lambda, n))
-    XA = df.drop(columns=['Y'])
-    X = XA.drop(columns=['A'])
     # fit regression from covariates X and exposure A to outcome Y
-    lr = LinearRegression(fit_intercept=True).fit(XA, df['Y'])
+    lr = LinearRegression(fit_intercept=True).fit(np.hstack([A.values.reshape(-1, 1), X]), Y)
     # extract the coefficients of the covariates
-    xy_coefs = lr.coef_[1:]
+    x_coefs = lr.coef_[1:]
     # calculate outcome adaptive penalization weights
-    weights = (np.abs(xy_coefs)) ** (-1 * gamma)
+    weights = (np.abs(x_coefs)) ** (-1 * gamma)
     # apply the penalization to the covariates themselves
     X_w = X / weights
     # fit logistic propensity score model from penalized covariates to the exposure
-    ipw = IPW(LogisticRegression(solver='liblinear', penalty='l1', C=Lambda), use_stabilized=False).fit(X_w, df['A'])
+    ipw = IPW(LogisticRegression(solver='liblinear', penalty='l1', C=Lambda), use_stabilized=False).fit(X_w, A)
     # compute inverse propensity weighting and calculate ATE
-    weights = ipw.compute_weights(X_w, df['A'])
-    outcomes = ipw.estimate_population_outcome(X_w, df['A'], df['Y'], w=weights)
+    weights = ipw.compute_weights(X_w, A)
+    outcomes = ipw.estimate_population_outcome(X_w, A, Y, w=weights)
     effect = ipw.estimate_effect(outcomes[1], outcomes[0])
-    return effect, xy_coefs, weights
+    return effect, x_coefs, weights
 
 
-def calc_group_diff(x_df, idx_trt, ipw):
+def calc_group_diff(X, idx_trt, ipw):
     """Utility function to calculate the difference in covariates between treatment and control groups"""
-    return (np.abs(np.average(x_df[idx_trt], weights=ipw[idx_trt], axis=0)) -
-            np.average(x_df[~idx_trt], weights=ipw[~idx_trt], axis=0))
+    return (np.abs(np.average(X[idx_trt], weights=ipw[idx_trt], axis=0)) -
+            np.average(X[~idx_trt], weights=ipw[~idx_trt], axis=0))
 
 
-def calc_wamd(df, ipw, xy_coefs):
+def calc_wamd(A, X, ipw, x_coefs):
     """Utility function to calculate the weighted absolute mean difference"""
-    x_df = df.drop(columns=['A', 'Y'])
-    idx_trt = df['A'] == 1
-    return calc_group_diff(x_df.values, idx_trt.values, ipw.values).dot(np.abs(xy_coefs))
+    idx_trt = A == 1
+    return calc_group_diff(X.values, idx_trt.values, ipw.values).dot(np.abs(x_coefs))
 
 
-def calc_outcome_adaptive_lasso(df, gamma_convergence_factor=2,
-                                log_lambdas=None):
+def calc_outcome_adaptive_lasso(A, Y, X, gamma_convergence_factor=2, log_lambdas=None):
     """Calculate estimate of average treatment effect using the outcome adaptive LASSO (Shortreed and Ertefaie, 2017)
-
     Parameters
     ----------
-    df : Dataset for which ATE will be calculated
+    A : Dataset for which ATE will be calculated
          The dataframe must have one column named A, one column named Y and the rest are covariates (arbitrarily named)
-
+    Y :
+    X :
     log_lambdas : log of lambda - strength of adaptive LASSO regularization.
         If log_lambdas has multiple values, lambda will be selected according to the minimal absolute mean difference,
         as suggested in the paper
         If None, it will be set to the suggested search list in the paper:
         [-10, -5, -2, -1, -0.75, -0.5, -0.25, 0.25, 0.49]
-
-
     gamma_convergence_factor : a constant to couple between lambda and gamma, the single-feature penalization strength
         The equation relating gamma and lambda is lambda * n^(gamma/2 -1) = n^gamma_convergence_factor
         Default value is 2, as suggested in the paper for the synthetic dataset experiments
-
-
     Returns
     -------
     ate : estimate of the average treatment effect
@@ -173,9 +156,9 @@ def calc_outcome_adaptive_lasso(df, gamma_convergence_factor=2,
 
     # Calculate ATE for each lambda, select the one minimizing the weighted absolute mean difference
     for il in range(len(lambdas)):
-        ate_vec[il], xy_coefs, ipw = calc_outcome_adaptive_lasso_single_lambda(df, lambdas[il], gamma_convergence_factor)
-        amd_vec[il] = calc_wamd(df, ipw, xy_coefs)
+        ate_vec[il], x_coefs, ipw = \
+            calc_outcome_adaptive_lasso_single_lambda(A, Y, X, lambdas[il], gamma_convergence_factor)
+        amd_vec[il] = calc_wamd(A, X, ipw, x_coefs)
 
     ate = ate_vec[np.argmin(amd_vec)]
-
     return ate
