@@ -95,7 +95,7 @@ def generate_synthetic_dataset(n=1000, d=100, rho=0, eta=0, scenario_num=1):
 
 def calc_outcome_adaptive_lasso_single_lambda(A, Y, X, Lambda, gamma_convergence_factor):
     """Calculate ATE with the outcome adaptive lasso"""
-    n = df.shape[0]  # number of samples
+    n = A.shape[0]  # number of samples
     # extract gamma according to Lambda and gamma_convergence_factor
     gamma = 2 * (1 + gamma_convergence_factor - log(Lambda, n))
     # fit regression from covariates X and exposure A to outcome Y
@@ -107,12 +107,20 @@ def calc_outcome_adaptive_lasso_single_lambda(A, Y, X, Lambda, gamma_convergence
     # apply the penalization to the covariates themselves
     X_w = X / weights
     # fit logistic propensity score model from penalized covariates to the exposure
-    ipw = IPW(LogisticRegression(solver='liblinear', penalty='l1', C=Lambda), use_stabilized=False).fit(X_w, A)
+    ipw = IPW(LogisticRegression(solver='liblinear', penalty='l1', C=1/Lambda), use_stabilized=False).fit(X_w, A)
     # compute inverse propensity weighting and calculate ATE
     weights = ipw.compute_weights(X_w, A)
     outcomes = ipw.estimate_population_outcome(X_w, A, Y, w=weights)
     effect = ipw.estimate_effect(outcomes[1], outcomes[0])
     return effect, x_coefs, weights
+
+
+def calc_ate_vanilla_ipw(A, Y, X):
+    ipw = IPW(LogisticRegression(solver='liblinear', penalty='l1', C=1e2, max_iter=500), use_stabilized=False).fit(X, A)
+    weights = ipw.compute_weights(X, A)
+    outcomes = ipw.estimate_population_outcome(X, A, Y, w=weights)
+    effect = ipw.estimate_effect(outcomes[1], outcomes[0])
+    return effect[0]
 
 
 def calc_group_diff(X, idx_trt, ipw):
@@ -149,7 +157,7 @@ def calc_outcome_adaptive_lasso(A, Y, X, gamma_convergence_factor=2, log_lambdas
     """
     if log_lambdas is None:
         log_lambdas = [-10, -5, -2, -1, -0.75, -0.5, -0.25, 0.25, 0.49]
-    n = df.shape[0]
+    n = A.shape[0]
     lambdas = n ** np.array(log_lambdas)
     amd_vec = np.zeros(lambdas.shape[0])
     ate_vec = np.zeros(lambdas.shape[0])
