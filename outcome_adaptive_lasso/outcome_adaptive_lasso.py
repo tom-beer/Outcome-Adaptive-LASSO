@@ -116,7 +116,7 @@ def calc_outcome_adaptive_lasso_single_lambda(A, Y, X, Lambda, gamma_convergence
 
 
 def calc_ate_vanilla_ipw(A, Y, X):
-    ipw = IPW(LogisticRegression(solver='liblinear', penalty='l1', C=1e2, max_iter=500), use_stabilized=False).fit(X, A)
+    ipw = IPW(LogisticRegression(solver='liblinear', penalty='l1', C=1e2, max_iter=500), use_stabilized=True).fit(X, A)
     weights = ipw.compute_weights(X, A)
     outcomes = ipw.estimate_population_outcome(X, A, Y, w=weights)
     effect = ipw.estimate_effect(outcomes[1], outcomes[0])
