@@ -123,16 +123,16 @@ def calc_ate_vanilla_ipw(A, Y, X):
     return effect[0]
 
 
-def calc_group_diff(X, idx_trt, ipw):
+def calc_group_diff(X, idx_trt, ipw, l_norm):
     """Utility function to calculate the difference in covariates between treatment and control groups"""
-    return (np.abs(np.average(X[idx_trt], weights=ipw[idx_trt], axis=0)) -
-            np.average(X[~idx_trt], weights=ipw[~idx_trt], axis=0))
+    return (np.abs(np.average(X[idx_trt], weights=ipw[idx_trt], axis=0) -
+                   np.average(X[~idx_trt], weights=ipw[~idx_trt], axis=0)))**l_norm
 
 
-def calc_wamd(A, X, ipw, x_coefs):
+def calc_wamd(A, X, ipw, x_coefs, l_norm=1):
     """Utility function to calculate the weighted absolute mean difference"""
     idx_trt = A == 1
-    return calc_group_diff(X.values, idx_trt.values, ipw.values).dot(np.abs(x_coefs))
+    return calc_group_diff(X.values, idx_trt.values, ipw.values, l_norm).dot(np.abs(x_coefs))
 
 
 def calc_outcome_adaptive_lasso(A, Y, X, gamma_convergence_factor=2, log_lambdas=None):
