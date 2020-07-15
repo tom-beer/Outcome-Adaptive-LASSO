@@ -1,3 +1,5 @@
+![](https://img.shields.io/github/license/tom-beer/Outcome-Adaptive-LASSO?color=magenta&style=plastic)
+
 <img src="logo.png" width=125 height=125 align="right">
 
 # Outcome Adaptive LASSO
