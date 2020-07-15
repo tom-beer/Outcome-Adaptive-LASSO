@@ -1,6 +1,3 @@
-.ipynb_checkpoints
-*/.ipynb_checkpoints/*
-/.idea/*
-*.csv
-boxplots_tries.py
-
+.ipynb_checkpoints/*
+.idea/*
+outcome_adaptive_lasso/__pycache__/*
