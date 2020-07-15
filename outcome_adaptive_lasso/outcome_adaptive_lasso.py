@@ -5,6 +5,26 @@ from causallib.estimation import IPW
 from math import log
 
 
+def calc_ate_vanilla_ipw(A, Y, X):
+    ipw = IPW(LogisticRegression(solver='liblinear', penalty='l1', C=1e2, max_iter=500), use_stabilized=True).fit(X, A)
+    weights = ipw.compute_weights(X, A)
+    outcomes = ipw.estimate_population_outcome(X, A, Y, w=weights)
+    effect = ipw.estimate_effect(outcomes[1], outcomes[0])
+    return effect[0]
+
+
+def calc_group_diff(X, idx_trt, ipw, l_norm):
+    """Utility function to calculate the difference in covariates between treatment and control groups"""
+    return (np.abs(np.average(X[idx_trt], weights=ipw[idx_trt], axis=0) -
+                   np.average(X[~idx_trt], weights=ipw[~idx_trt], axis=0)))**l_norm
+
+
+def calc_wamd(A, X, ipw, x_coefs, l_norm=1):
+    """Utility function to calculate the weighted absolute mean difference"""
+    idx_trt = A == 1
+    return calc_group_diff(X.values, idx_trt.values, ipw.values, l_norm).dot(np.abs(x_coefs))
+
+
 def calc_outcome_adaptive_lasso_single_lambda(A, Y, X, Lambda, gamma_convergence_factor):
     """Calculate ATE with the outcome adaptive lasso"""
     n = A.shape[0]  # number of samples
@@ -25,26 +45,6 @@ def calc_outcome_adaptive_lasso_single_lambda(A, Y, X, Lambda, gamma_convergence
     outcomes = ipw.estimate_population_outcome(X_w, A, Y, w=weights)
     effect = ipw.estimate_effect(outcomes[1], outcomes[0])
     return effect, x_coefs, weights
-
-
-def calc_ate_vanilla_ipw(A, Y, X):
-    ipw = IPW(LogisticRegression(solver='liblinear', penalty='l1', C=1e2, max_iter=500), use_stabilized=True).fit(X, A)
-    weights = ipw.compute_weights(X, A)
-    outcomes = ipw.estimate_population_outcome(X, A, Y, w=weights)
-    effect = ipw.estimate_effect(outcomes[1], outcomes[0])
-    return effect[0]
-
-
-def calc_group_diff(X, idx_trt, ipw, l_norm):
-    """Utility function to calculate the difference in covariates between treatment and control groups"""
-    return (np.abs(np.average(X[idx_trt], weights=ipw[idx_trt], axis=0) -
-                   np.average(X[~idx_trt], weights=ipw[~idx_trt], axis=0)))**l_norm
-
-
-def calc_wamd(A, X, ipw, x_coefs, l_norm=1):
-    """Utility function to calculate the weighted absolute mean difference"""
-    idx_trt = A == 1
-    return calc_group_diff(X.values, idx_trt.values, ipw.values, l_norm).dot(np.abs(x_coefs))
 
 
 def calc_outcome_adaptive_lasso(A, Y, X, gamma_convergence_factor=2, log_lambdas=None):
