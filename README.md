@@ -3,7 +3,7 @@
 <img src="logo.png" width=125 height=125 align="right">
 
 # Outcome Adaptive LASSO
-This repository contains a Python implementation of the paper [Outcome-Adaptive Lasso: Variable Selection for Causal Inference](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5591052/pdf/nihms-852754.pdf), *Shortreed and Ertefaie, 2017*
+This repository contains a Python implementation of the paper [Outcome-Adaptive Lasso: Variable Selection for Causal Inference](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5591052/pdf/nihms-852754.pdf) (*Shortreed and Ertefaie, 2017*)
 
 The code is also posted on [PapersWithCode](https://paperswithcode.com/paper/outcome-adaptive-lasso-variable-selection-for)
 
