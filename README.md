@@ -1,6 +1,6 @@
 ![](https://img.shields.io/github/license/tom-beer/Outcome-Adaptive-LASSO?color=magenta&style=plastic)
 
-<img src="logo.png" width=125 height=125 align="right">
+<img src="images/logo.png" width=125 height=125 align="right">
 
 # Outcome Adaptive LASSO
 This repository contains a Python implementation of the paper [Outcome-Adaptive Lasso: Variable Selection for Causal Inference](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC5591052/pdf/nihms-852754.pdf) (*Shortreed and Ertefaie, 2017*)
@@ -16,7 +16,13 @@ ate = calc_outcome_adaptive_lasso(df['A'], df['Y'], df[[col for col in df if col
 ```
 
 2. To use it on your dataset, pass it in as a dataframe just like above
+## Comparison to other methods
+* `compare_oal_ipw.py` is a script to reproduce some of the figures in the paper, comparing the outcome adaptive lasso to plain IPW based estimation. It includes a replication of figure 1 from the supplementary material of the original paper, using scenario 4 of the synthetic dataset with 200 samples, 100 covariates and no correlation between covariates:
+<img src="images/compare_oal_ipw_output.png" width=680 height=680 align="center">
+You can run the script with any of ther settings described in the paper.
 
-* `compare_oal_ipw.py` is a script to reproduce some of the figures in the paper, comparing the outcome adaptive lasso to plain IPW based estimation. It includes a replication of figure 1 from the supplementary material, using scenario 4 of the synthetic dataset with 200 samples, 100 covariates and no correlation between covariates:
-![](compare_oal_ipw_output.png)
+## Requirements
+1. Coming
+2. Soon!
+
 logo created by [Ragal Kartidev](https://thenounproject.com/search/?q=lasso&i=3411314) from Noun Project
