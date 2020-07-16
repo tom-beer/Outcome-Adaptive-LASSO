@@ -22,7 +22,9 @@ ate = calc_outcome_adaptive_lasso(df['A'], df['Y'], df[[col for col in df if col
 You can run the script with any of ther settings described in the paper.
 
 ## Requirements
-1. Coming
-2. Soon!
+[Causal Inference 360 ](https://github.com/IBM/causallib) is the estimation framework used here. To install:
+```python
+pip install causallib
+```
 
 logo created by [Ragal Kartidev](https://thenounproject.com/search/?q=lasso&i=3411314) from Noun Project
