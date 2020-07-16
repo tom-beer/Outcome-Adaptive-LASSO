@@ -20,4 +20,6 @@ ate = calc_outcome_adaptive_lasso(df['A'], df['Y'], df[[col for col in df if col
 > `compare_oal_ipw.py` is a script to reproduce some of the figures in the paper, comparing the outcome adaptive lasso to plain IPW based estimation. It includes a replication of figure 1 from the supplementary material, using scenario 4 of the synthetic dataset with 200 samples, 100 covariates and no correlation between covariates:
 <img src="images/compare_oal_ipw_output.png" width=680 height=680 align="center">
 
+## Requirements
+
 logo created by [Ragal Kartidev](https://thenounproject.com/search/?q=lasso&i=3411314) from Noun Project
