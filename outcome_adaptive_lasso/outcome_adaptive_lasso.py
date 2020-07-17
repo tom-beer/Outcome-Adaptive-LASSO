@@ -1,8 +1,25 @@
 import numpy as np
-from sklearn.linear_model import LogisticRegression
-from sklearn.linear_model import LinearRegression
-from causallib.estimation import IPW
+import pandas as pd
+from sklearn.linear_model import LogisticRegression, LinearRegression
 from math import log
+from causallib.estimation import IPW
+
+
+def check_input(A, Y, X):
+    if not isinstance(A, pd.Series):
+        if not np.max(A.shape) == A.size:
+            raise Exception(f'A must be one dimensional, got shape {A.shape}')
+        A = pd.Series(A.flatten())
+    if not isinstance(Y, pd.Series):
+        if not np.max(A.shape) == A.size:
+            raise Exception(f'A must be one dimensional, got shape {A.shape}')
+        Y = pd.Series(Y.flatten())
+    if not isinstance(X, pd.DataFrame):
+        X = pd.DataFrame(X)
+    if not len(A.index) == len(Y.index) == len(X.index):
+        raise Exception(f'A, Y, X must have same number of samples, '
+                        f'got A: {len(A.index)} samples, Y: {len(Y.index)} samples, X: {len(X.index)} samples')
+    return A, Y, X
 
 
 def calc_ate_vanilla_ipw(A, Y, X):
@@ -31,9 +48,10 @@ def calc_outcome_adaptive_lasso_single_lambda(A, Y, X, Lambda, gamma_convergence
     # extract gamma according to Lambda and gamma_convergence_factor
     gamma = 2 * (1 + gamma_convergence_factor - log(Lambda, n))
     # fit regression from covariates X and exposure A to outcome Y
-    lr = LinearRegression(fit_intercept=True).fit(np.hstack([A.values.reshape(-1, 1), X]), Y)
+    XA = X.merge(A.to_frame(), left_index=True, right_index=True)
+    lr = LinearRegression(fit_intercept=True).fit(XA, Y)
     # extract the coefficients of the covariates
-    x_coefs = lr.coef_[1:]
+    x_coefs = lr.coef_.flatten()[1:]
     # calculate outcome adaptive penalization weights
     weights = (np.abs(x_coefs)) ** (-1 * gamma)
     # apply the penalization to the covariates themselves
@@ -51,10 +69,9 @@ def calc_outcome_adaptive_lasso(A, Y, X, gamma_convergence_factor=2, log_lambdas
     """Calculate estimate of average treatment effect using the outcome adaptive LASSO (Shortreed and Ertefaie, 2017)
     Parameters
     ----------
-    A : Dataset for which ATE will be calculated
-         The dataframe must have one column named A, one column named Y and the rest are covariates (arbitrarily named)
-    Y :
-    X :
+    A : Exposure (=treatment, intervention) - pandas series or one-dimensional numpy array
+    Y : Outcome - pandas series or one-dimensional numpy array
+    X : Covariates - pandas dataframe or two-dimensional numpy array (shape n_samples, n_covariates)
     log_lambdas : log of lambda - strength of adaptive LASSO regularization.
         If log_lambdas has multiple values, lambda will be selected according to the minimal absolute mean difference,
         as suggested in the paper
@@ -67,6 +84,9 @@ def calc_outcome_adaptive_lasso(A, Y, X, gamma_convergence_factor=2, log_lambdas
     -------
     ate : estimate of the average treatment effect
     """
+
+    A, Y, X = check_input(A, Y, X)
+
     if log_lambdas is None:
         log_lambdas = [-10, -5, -2, -1, -0.75, -0.5, -0.25, 0.25, 0.49]
     n = A.shape[0]
@@ -80,5 +100,4 @@ def calc_outcome_adaptive_lasso(A, Y, X, gamma_convergence_factor=2, log_lambdas
             calc_outcome_adaptive_lasso_single_lambda(A, Y, X, lambdas[il], gamma_convergence_factor)
         amd_vec[il] = calc_wamd(A, X, ipw, x_coefs)
 
-    ate = ate_vec[np.argmin(amd_vec)]
-    return ate
+    return ate_vec[np.argmin(amd_vec)]
